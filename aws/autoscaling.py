@@ -116,18 +116,23 @@ class AutoScalingGroup:
         ebs_volume_gb=128,
         **user_data_kwargs,
     ):
-
+        if accelerator=="gpu":
+            ami_id="ami-01897afb53ff4ec82"
+        else:
+            ami_id="ami-0ac73f33a1888c64a"
         req = {
             "LaunchConfigurationName": name,
             "InstanceType": instance_type,
             "IamInstanceProfile": instance_role,
-            "ImageId": self.get_ami_id(Accelerator.from_str(accelerator)),
+            #"ImageId": self.get_ami_id(Accelerator.from_str(accelerator)),
+            "ImageId": ami_id,            
             "SecurityGroups": security_groups,
             "AssociatePublicIpAddress": True,
-            "UserData": self.get_user_data(user_data_template, **user_data_kwargs),
+            #"UserData": self.get_user_data(user_data_template, **user_data_kwargs),
+            "KeyName": "jrejin-key",
             "BlockDeviceMappings": [
                 {
-                    "DeviceName": "/dev/xvda",
+                    "DeviceName": "/dev/sda1",
                     "Ebs": {
                         "VolumeSize": ebs_volume_gb,
                         "VolumeType": "gp2",

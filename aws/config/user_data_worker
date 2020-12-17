@@ -93,6 +93,6 @@ EOL
 #-------------------------
 # Enable and start worker
 #-------------------------
-systemctl enable torchelastic_worker
-systemctl start torchelastic_worker
+#systemctl enable torchelastic_worker
+#systemctl start torchelastic_worker
 --//

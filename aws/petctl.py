@@ -182,7 +182,7 @@ def run_job(session, specs_json, args):
     # create a single node asg to host the etcd server for rendezvous
     etcd_server_hostname = asg.create_asg_sync(rdzv_asg_name, size=1, **rdzv_specs)[0]
     rdzv_endpoint = f"{etcd_server_hostname}:2379"
-
+    
     # allow overriding instance types from cli
     if args.instance_type:
         worker_specs["instance_type"] = args.instance_type
