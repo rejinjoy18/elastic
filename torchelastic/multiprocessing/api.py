@@ -482,6 +482,7 @@ class SubprocessContext(PContext):
         self._failures: Dict[int, ProcessFailure] = {}
         # pyre-fixme[8]: The attribute is defined in _start method
         self.subprocess_handlers: Dict[int, SubprocessHandler] = None
+        self.envs = envs
 
     def _start(self):
         if self.subprocess_handlers:
@@ -525,6 +526,7 @@ class SubprocessContext(PContext):
                 failures=self._failures,
                 stdouts=self.stdouts,
                 stderrs=self.stderrs,
+                return_values=self.envs
             )
             if result.is_failed():
                 first_failure = min(result.failures.values(), key=lambda f: f.timestamp)

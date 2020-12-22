@@ -115,6 +115,10 @@ class LocalElasticAgent(SimpleElasticAgent):
         log.info(f"log directory set to: {dir}")
         return dir
 
+    def _get_instance_id(self):
+        url="http://169.254.169.254/latest/meta-data/instance-id"
+        return requests.get(url).text
+    
     @prof
     def _stop_workers(self, worker_group: WorkerGroup) -> None:
         self._shutdown()
@@ -145,6 +149,7 @@ class LocalElasticAgent(SimpleElasticAgent):
                 "TORCHELASTIC_MAX_RESTARTS": str(spec.max_restarts),
                 "TORCHELASTIC_RUN_ID": spec.rdzv_handler.get_run_id(),
                 "NCCL_ASYNC_ERROR_HANDLING": str(1),
+                "INSTANCE_ID": instance_id
             }
             if "OMP_NUM_THREADS" in os.environ:
                 worker_env["OMP_NUM_THREADS"] = os.environ["OMP_NUM_THREADS"]
@@ -198,6 +203,7 @@ class LocalElasticAgent(SimpleElasticAgent):
                 return RunResult(
                     state=WorkerState.FAILED,
                     failures=worker_failures,
+                    return_values=result.return_values
                 )
             else:
                 # copy ret_val_queue into a map with a global ranks
