@@ -10,6 +10,7 @@ import logging
 import os
 import shutil
 import tempfile
+import requests
 from typing import Any, Dict, Optional, Tuple
 
 from torchelastic.agent.server.api import (
@@ -129,7 +130,7 @@ class LocalElasticAgent(SimpleElasticAgent):
         store = worker_group.store
         master_addr, master_port = super()._get_master_addr_port(store)
         restart_count = spec.max_restarts - self._remaining_restarts
-
+        instance_id = self._get_instance_id()
         args: Dict[int, Tuple] = {}
         envs: Dict[int, Dict[str, str]] = {}
         for worker in worker_group.workers:
@@ -197,13 +198,15 @@ class LocalElasticAgent(SimpleElasticAgent):
                 log.error(f"[{role}] Worker group failed")
                 # map local rank failure to global rank
                 worker_failures = {}
+                failed_instances = []
                 for local_rank, failure in result.failures.items():
                     worker = worker_group.workers[local_rank]
                     worker_failures[worker.global_rank] = failure
+                    failed_instances.append(result.return_values[local_rank]["INSTANCE_ID"])
                 return RunResult(
                     state=WorkerState.FAILED,
                     failures=worker_failures,
-                    return_values=result.return_values
+                    instance_id=failed_instances
                 )
             else:
                 # copy ret_val_queue into a map with a global ranks

@@ -187,6 +187,9 @@ def main():
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch, device_id, print_freq)
 
+        if (epoch +1)%3 == 0:
+            raise("Dummy error")
+
         # evaluate on validation set
         acc1 = validate(val_loader, model, criterion, device_id, print_freq)
 

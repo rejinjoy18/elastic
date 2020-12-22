@@ -24,3 +24,7 @@ docs/torchelastic.docset
 
 # Operator Binary
 kubernetes//bin/manager
+
+build/
+dist/
+*.egg-info/

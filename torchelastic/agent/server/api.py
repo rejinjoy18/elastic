@@ -331,6 +331,7 @@ class RunResult:
     state: WorkerState
     return_values: Dict[int, Any] = field(default_factory=dict)
     failures: Dict[int, ProcessFailure] = field(default_factory=dict)
+    instance_id: List[str] = field(default_factory=list)
 
     def is_failed(self) -> bool:
         return self.state == WorkerState.FAILED
@@ -749,6 +750,7 @@ class SimpleElasticAgent(ElasticAgent):
                 self._exit_barrier()
                 return run_result
             elif state in {WorkerState.UNHEALTHY, WorkerState.FAILED}:
+                print(run_result)
                 if self._remaining_restarts > 0:
                     log.info(
                         f"[{role}] Worker group {state.name}. "
